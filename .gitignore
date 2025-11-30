@@ -41,6 +41,9 @@ build-debug/
 cmake-build-debug/
 bin/
 
+# Testing 
+Testing/
+
 # IDE/project config
 .idea/
 .vscode/
