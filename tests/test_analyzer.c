@@ -1,1 +1,3 @@
-// testing the analyzer functionality
+#include <stdio.h>
+
+int main() {}

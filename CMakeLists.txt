@@ -10,6 +10,10 @@ add_compile_options(-Wall -Wextra)
 # include headers
 include_directories(include)
 
+# debug/release flags
+set(CMAKE_C_FLAGS_DEBUG "-g")
+set(CMAKE_C_FLAGS_RELEASE "-O3")
+
 # build library
 add_library(pwcheck_lib STATIC
     src/analyzer.c

@@ -1,1 +1,3 @@
-// testing generator functionality
+#include <stdio.h>
+
+int main() {}

@@ -11,9 +11,23 @@
 
 ## Build
 
+#### Normal build
+
 ```bash
-cmake -B build && cmake --build build
+cmake -B build -DCMAKE_BUILD_TYPE=Release
+cmake --build build
 ```
+
+#### Debug build (for debugging with gdb/LLDB)
+
+```bash
+cmake -B build-debug -DCMAKE_BUILD_TYPE=Debug
+cmake --build build-debug
+```
+
+Debug builds include symbols, so you can step through code, inspect variables, and watch memory.
+
+Release builds are optimized and don’t include debug info.
 
 ## Usage
 
