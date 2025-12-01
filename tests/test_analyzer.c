@@ -1,4 +1,4 @@
-#include "passcheck/analyzer.h"
+#include "slovo/analyzer.h"
 #include "unity.h"
 #include <string.h>
 
@@ -16,7 +16,7 @@ void tearDown(void) {
 // ============================================
 
 void test_null_password(void) {
-  PasswordStrength result = analyze_password(NULL);
+  password_strength_t result = analyze_password(NULL);
 
   TEST_ASSERT_EQUAL(0, result.length);
   TEST_ASSERT_EQUAL(NO_PASSWORD, result.level);
@@ -24,7 +24,7 @@ void test_null_password(void) {
 }
 
 void test_empty_password(void) {
-  PasswordStrength result = analyze_password("");
+  password_strength_t result = analyze_password("");
 
   TEST_ASSERT_EQUAL(0, result.length);
   TEST_ASSERT_EQUAL(VERY_WEAK, result.level);
@@ -35,7 +35,7 @@ void test_empty_password(void) {
 // ============================================
 
 void test_lowercase_only(void) {
-  PasswordStrength result = analyze_password("abcdef");
+  password_strength_t result = analyze_password("abcdef");
 
   TEST_ASSERT_TRUE(result.has_lower);
   TEST_ASSERT_FALSE(result.has_upper);
@@ -45,7 +45,7 @@ void test_lowercase_only(void) {
 }
 
 void test_uppercase_only(void) {
-  PasswordStrength result = analyze_password("ABCDEF");
+  password_strength_t result = analyze_password("ABCDEF");
 
   TEST_ASSERT_FALSE(result.has_lower);
   TEST_ASSERT_TRUE(result.has_upper);
@@ -55,7 +55,7 @@ void test_uppercase_only(void) {
 }
 
 void test_digits_only(void) {
-  PasswordStrength result = analyze_password("123456");
+  password_strength_t result = analyze_password("123456");
 
   TEST_ASSERT_FALSE(result.has_lower);
   TEST_ASSERT_FALSE(result.has_upper);
@@ -65,7 +65,7 @@ void test_digits_only(void) {
 }
 
 void test_symbols_only(void) {
-  PasswordStrength result = analyze_password("!@#$%^");
+  password_strength_t result = analyze_password("!@#$%^");
 
   TEST_ASSERT_FALSE(result.has_lower);
   TEST_ASSERT_FALSE(result.has_upper);
@@ -75,7 +75,7 @@ void test_symbols_only(void) {
 }
 
 void test_mixed_characters(void) {
-  PasswordStrength result = analyze_password("Abc123!@#");
+  password_strength_t result = analyze_password("Abc123!@#");
 
   TEST_ASSERT_TRUE(result.has_lower);
   TEST_ASSERT_TRUE(result.has_upper);
@@ -89,21 +89,21 @@ void test_mixed_characters(void) {
 // ============================================
 
 void test_short_password(void) {
-  PasswordStrength result = analyze_password("abc");
+  password_strength_t result = analyze_password("abc");
 
   TEST_ASSERT_EQUAL(3, result.length);
   TEST_ASSERT_LESS_THAN(20, result.score);
 }
 
 void test_medium_length_password(void) {
-  PasswordStrength result = analyze_password("abcdefgh");
+  password_strength_t result = analyze_password("abcdefgh");
 
   TEST_ASSERT_EQUAL(8, result.length);
   TEST_ASSERT_GREATER_OR_EQUAL(20, result.score);
 }
 
 void test_long_password(void) {
-  PasswordStrength result = analyze_password("abcdefghijklmnop");
+  password_strength_t result = analyze_password("abcdefghijklmnop");
 
   TEST_ASSERT_EQUAL(16, result.length);
   TEST_ASSERT_GREATER_OR_EQUAL(40, result.score);
@@ -115,7 +115,7 @@ void test_long_password(void) {
 
 void test_entropy_single_character_type(void) {
   // Only lowercase: pool_size = 26
-  PasswordStrength result = analyze_password("abcdefgh");
+  password_strength_t result = analyze_password("abcdefgh");
 
   // Entropy = 8 * log2(26) ≈ 37.6
   TEST_ASSERT_GREATER_THAN(35.0, result.entropy);
@@ -124,7 +124,7 @@ void test_entropy_single_character_type(void) {
 
 void test_entropy_mixed_characters(void) {
   // Lower + Upper + Digit + Symbol: pool_size = 94
-  PasswordStrength result = analyze_password("Abc123!@#");
+  password_strength_t result = analyze_password("Abc123!@#");
 
   // Entropy = 9 * log2(94) ≈ 59.1
   TEST_ASSERT_GREATER_THAN(55.0, result.entropy);
@@ -132,7 +132,7 @@ void test_entropy_mixed_characters(void) {
 }
 
 void test_entropy_zero_for_empty(void) {
-  PasswordStrength result = analyze_password("");
+  password_strength_t result = analyze_password("");
 
   TEST_ASSERT_EQUAL_DOUBLE(0.0, result.entropy);
 }
@@ -142,14 +142,14 @@ void test_entropy_zero_for_empty(void) {
 // ============================================
 
 void test_very_weak_password(void) {
-  PasswordStrength result = analyze_password("abc");
+  password_strength_t result = analyze_password("abc");
 
   TEST_ASSERT_EQUAL(VERY_WEAK, result.level);
   TEST_ASSERT_LESS_THAN(30, result.score);
 }
 
 void test_weak_password(void) {
-  PasswordStrength result = analyze_password("password");
+  password_strength_t result = analyze_password("password");
 
   TEST_ASSERT_EQUAL(WEAK, result.level);
   TEST_ASSERT_GREATER_OR_EQUAL(30, result.score);
@@ -157,7 +157,7 @@ void test_weak_password(void) {
 }
 
 void test_medium_password(void) {
-  PasswordStrength result = analyze_password("Password1");
+  password_strength_t result = analyze_password("Password1");
 
   TEST_ASSERT_EQUAL(MEDIUM, result.level);
   TEST_ASSERT_GREATER_OR_EQUAL(50, result.score);
@@ -165,7 +165,7 @@ void test_medium_password(void) {
 }
 
 void test_strong_password(void) {
-  PasswordStrength result = analyze_password("P@ssw0rd123");
+  password_strength_t result = analyze_password("P@ssw0rd123");
 
   TEST_ASSERT_EQUAL(STRONG, result.level);
   TEST_ASSERT_GREATER_OR_EQUAL(70, result.score);
@@ -173,7 +173,7 @@ void test_strong_password(void) {
 }
 
 void test_very_strong_password(void) {
-  PasswordStrength result = analyze_password("MyS3cur3P@ssw0rd!");
+  password_strength_t result = analyze_password("MyS3cur3P@ssw0rd!");
 
   TEST_ASSERT_EQUAL(VERY_STRONG, result.level);
   TEST_ASSERT_GREATER_OR_EQUAL(85, result.score);
@@ -184,21 +184,21 @@ void test_very_strong_password(void) {
 // ============================================
 
 void test_score_increases_with_length(void) {
-  PasswordStrength short_pw = analyze_password("Abc1!");
-  PasswordStrength long_pw = analyze_password("Abc1!Abc1!Abc1!");
+  password_strength_t short_pw = analyze_password("Abc1!");
+  password_strength_t long_pw = analyze_password("Abc1!Abc1!Abc1!");
 
   TEST_ASSERT_GREATER_THAN(short_pw.score, long_pw.score);
 }
 
 void test_score_increases_with_variety(void) {
-  PasswordStrength low_variety = analyze_password("aaaaaaaa");
-  PasswordStrength high_variety = analyze_password("Aa1!Aa1!");
+  password_strength_t low_variety = analyze_password("aaaaaaaa");
+  password_strength_t high_variety = analyze_password("Aa1!Aa1!");
 
   TEST_ASSERT_GREATER_THAN(low_variety.score, high_variety.score);
 }
 
 void test_score_calculation_length_16plus(void) {
-  PasswordStrength result = analyze_password("aaaaaaaaaaaaaaaa"); // 16 chars
+  password_strength_t result = analyze_password("aaaaaaaaaaaaaaaa"); // 16 chars
 
   // Should get 40 points for length alone
   TEST_ASSERT_GREATER_OR_EQUAL(40, result.score);
@@ -206,7 +206,7 @@ void test_score_calculation_length_16plus(void) {
 
 void test_score_calculation_all_types(void) {
   // Password with all character types
-  PasswordStrength result = analyze_password("Abc123!@");
+  password_strength_t result = analyze_password("Abc123!@");
 
   // Should have points from all variety types (4 * 10 = 40)
   TEST_ASSERT_GREATER_OR_EQUAL(40, result.score);
@@ -245,14 +245,14 @@ void test_level_to_string_very_strong(void) {
 // ============================================
 
 void test_whitespace_in_password(void) {
-  PasswordStrength result = analyze_password("pass word");
+  password_strength_t result = analyze_password("pass word");
 
   TEST_ASSERT_EQUAL(9, result.length);
   TEST_ASSERT_TRUE(result.has_symbol); // Space is treated as symbol
 }
 
 void test_special_characters_variety(void) {
-  PasswordStrength result = analyze_password("!@#$%^&*()");
+  password_strength_t result = analyze_password("!@#$%^&*()");
 
   TEST_ASSERT_TRUE(result.has_symbol);
   TEST_ASSERT_EQUAL(10, result.length);
@@ -263,14 +263,14 @@ void test_very_long_password(void) {
   memset(long_pw, 'a', 100);
   long_pw[100] = '\0';
 
-  PasswordStrength result = analyze_password(long_pw);
+  password_strength_t result = analyze_password(long_pw);
 
   TEST_ASSERT_EQUAL(100, result.length);
   TEST_ASSERT_GREATER_OR_EQUAL(40, result.score); // Max length points
 }
 
 void test_numbers_at_end(void) {
-  PasswordStrength result = analyze_password("password123");
+  password_strength_t result = analyze_password("password123");
 
   TEST_ASSERT_TRUE(result.has_lower);
   TEST_ASSERT_TRUE(result.has_digit);
@@ -278,7 +278,7 @@ void test_numbers_at_end(void) {
 }
 
 void test_special_chars_at_start(void) {
-  PasswordStrength result = analyze_password("!@#password");
+  password_strength_t result = analyze_password("!@#password");
 
   TEST_ASSERT_TRUE(result.has_symbol);
   TEST_ASSERT_TRUE(result.has_lower);
@@ -290,37 +290,37 @@ void test_special_chars_at_start(void) {
 // ============================================
 
 void test_common_weak_password_password(void) {
-  PasswordStrength result = analyze_password("password");
+  password_strength_t result = analyze_password("password");
   TEST_ASSERT_LESS_THAN(50, result.score);
 }
 
 void test_common_weak_password_123456(void) {
-  PasswordStrength result = analyze_password("123456");
+  password_strength_t result = analyze_password("123456");
   TEST_ASSERT_LESS_THAN(50, result.score);
 }
 
 void test_common_weak_password_qwerty(void) {
-  PasswordStrength result = analyze_password("qwerty");
+  password_strength_t result = analyze_password("qwerty");
   TEST_ASSERT_LESS_THAN(50, result.score);
 }
 
 void test_common_weak_password_abc123(void) {
-  PasswordStrength result = analyze_password("abc123");
+  password_strength_t result = analyze_password("abc123");
   TEST_ASSERT_LESS_THAN(50, result.score);
 }
 
 void test_strong_password_example1(void) {
-  PasswordStrength result = analyze_password("MyS3cur3P@ssw0rd!");
+  password_strength_t result = analyze_password("MyS3cur3P@ssw0rd!");
   TEST_ASSERT_GREATER_OR_EQUAL(70, result.score);
 }
 
 void test_strong_password_example2(void) {
-  PasswordStrength result = analyze_password("Tr0ub4dor&3");
+  password_strength_t result = analyze_password("Tr0ub4dor&3");
   TEST_ASSERT_GREATER_OR_EQUAL(70, result.score);
 }
 
 void test_strong_password_example3(void) {
-  PasswordStrength result = analyze_password("C0mpl3x!ty#2024");
+  password_strength_t result = analyze_password("C0mpl3x!ty#2024");
   TEST_ASSERT_GREATER_OR_EQUAL(70, result.score);
 }
 
@@ -329,22 +329,22 @@ void test_strong_password_example3(void) {
 // ============================================
 
 void test_exactly_8_characters(void) {
-  PasswordStrength result = analyze_password("abcdefgh");
+  password_strength_t result = analyze_password("abcdefgh");
   TEST_ASSERT_EQUAL(8, result.length);
 }
 
 void test_exactly_12_characters(void) {
-  PasswordStrength result = analyze_password("abcdefghijkl");
+  password_strength_t result = analyze_password("abcdefghijkl");
   TEST_ASSERT_EQUAL(12, result.length);
 }
 
 void test_exactly_16_characters(void) {
-  PasswordStrength result = analyze_password("abcdefghijklmnop");
+  password_strength_t result = analyze_password("abcdefghijklmnop");
   TEST_ASSERT_EQUAL(16, result.length);
 }
 
 void test_single_character(void) {
-  PasswordStrength result = analyze_password("a");
+  password_strength_t result = analyze_password("a");
   TEST_ASSERT_EQUAL(1, result.length);
   TEST_ASSERT_EQUAL(VERY_WEAK, result.level);
 }

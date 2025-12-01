@@ -1,4 +1,4 @@
-#include "passcheck/generator.h"
+#include "slovo/generator.h"
 
 #include <ctype.h>
 #include <errno.h>

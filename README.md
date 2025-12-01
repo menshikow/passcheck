@@ -1,4 +1,4 @@
-# 🔐 Passcheck
+# 🔐 Slovo
 
 > **CLI tool to analyze password strength and generate secure passwords**
 

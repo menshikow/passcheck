@@ -1,4 +1,4 @@
-#include "passcheck/analyzer.h"
+#include "slovo/analyzer.h"
 
 #include <ctype.h>
 #include <math.h>
