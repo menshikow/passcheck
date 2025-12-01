@@ -5,7 +5,7 @@
 [![C17](https://img.shields.io/badge/C-17-blue.svg?style=flat-square)](https://en.wikipedia.org/wiki/C17_(C_standard_revision))
 [![CMake](https://img.shields.io/badge/CMake-3.15+-064F8C.svg?style=flat-square&logo=cmake)](https://cmake.org/)
 [![License](https://img.shields.io/badge/license-MIT-green.svg?style=flat-square)](LICENSE)
-[![Platform](https://img.shields.io/badge/platform-Linux%20%7C%20macOS-lightgrey.svg?style=flat-square)]()
+[![Platform](https://img.shields.io/badge/platform-Linux%20%7C%20macOS-lightgrey.svg?style=flat-square)](https://youtu.be/dQw4w9WgXcQ?si=Xy0-u8pds4z-7CPV)
 
 > • [Installation](#installation) • [Usage](#usage) • [Testing](#testing) • [Examples](#examples)
 
@@ -118,7 +118,7 @@ Rating: VERY STRONG
 
 ## Testing
 
-The project includes comprehensive unit tests using the [Unity](https://github.com/ThrowTheSwitch/Unity) testing framework.
+The project includes unit tests using the [Unity](https://github.com/ThrowTheSwitch/Unity) testing framework.
 
 ### Run All Tests
 
@@ -187,7 +187,7 @@ cmake --build build
 - **Unity** (testing framework) - Automatically fetched during build via CMake FetchContent
 - **math.h** (standard C library) - For entropy calculations
 
-No manual dependency installation required!
+No manual dependency installation required
 
 ## License
 
@@ -195,5 +195,5 @@ MIT License [LICENSE](LICENSE)
 
 ## Acknowledgments
 
-- [Unity Test Framework](https://github.com/ThrowTheSwitch/Unity) - Excellent C testing framework
-- Password strength algorithms based on NIST guidelines
+- [Unity Test Framework](https://github.com/ThrowTheSwitch/Unity) - source for the C testing framework, which is used
+- Password strength algorithms based on NIST guidelines (National Institute of Standards and Technology for cybersecurity, risk management, and privacy.)
