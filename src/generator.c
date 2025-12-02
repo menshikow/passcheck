@@ -1,3 +1,5 @@
+#define _GNU_SOURCE
+
 #include "slovo/generator.h"
 
 #include <ctype.h>
@@ -6,13 +8,14 @@
 #include <stdlib.h>
 #include <string.h>
 
-// system-oriented functions
 #ifdef _WIN32
 #include <bcrypt.h>
 #include <windows.h>
 #pragma comment(lib, "bcrypt.lib")
-#elif defined(__linux__) || defined(__APPLE__) || defined(__unix__)
+#elif defined(__linux__)
 #include <sys/random.h>
+#include <unistd.h>
+#elif defined(__APPLE__) || defined(__unix__)
 #include <unistd.h>
 #endif
 
@@ -26,37 +29,29 @@ static const char DIGITS[] = "0123456789";
 static char **common_passwords_list = NULL;
 static size_t common_passwords_count = 0;
 
-// random byte generation function
+// random byte generation
 static int get_random_bytes(unsigned char *buffer, size_t size) {
 #ifdef _WIN32
   NTSTATUS status = BCryptGenRandom(NULL, buffer, (ULONG)size,
                                     BCRYPT_USE_SYSTEM_PREFERRED_RNG);
-
   return (status == 0) ? 0 : -1;
 
-#elif defined(__linux__) || defined(__APPLE__) || defined(__unix__)
+#elif defined(__linux__)
   ssize_t result = 0;
   size_t bytes_read = 0;
 
-  // read until all bytes are gathered
   while (bytes_read < size) {
     result = getrandom(buffer + bytes_read, size - bytes_read, 0);
-
     if (result == -1) {
-      if (errno == EINTR) {
-        // interrupted by signal, retry
+      if (errno == EINTR)
         continue;
-      }
-      // error in getrandom (e.g., EFAULT, ENOSYS, etc.)
-      break;
-    } else if (result == 0) {
-      // getrandom returned 0 (shouldn't happen without GRND_NONBLOCK)
       break;
     }
+    if (result == 0)
+      break;
     bytes_read += (size_t)result;
   }
 
-  // fallback to /dev/urandom if not all bytes were read
   if (bytes_read < size) {
     FILE *fp = fopen("/dev/urandom", "rb");
     if (!fp)
@@ -67,8 +62,9 @@ static int get_random_bytes(unsigned char *buffer, size_t size) {
   }
 
   return (bytes_read == size) ? 0 : -1;
+
 #else
-  // fallback for other systems using /dev/urandom
+  // macOS, BSD, fallback to /dev/urandom
   FILE *fp = fopen("/dev/urandom", "rb");
   if (!fp)
     return -1;
@@ -78,23 +74,19 @@ static int get_random_bytes(unsigned char *buffer, size_t size) {
 #endif
 }
 
-//
-
+// load common passwords
 generator_error_t load_common_passwords(const char *filepath) {
   FILE *file = fopen(filepath, "r");
   if (!file) {
-    // strerror(errno) for error reporting
     fprintf(stderr, "Failed to open common passwords file: %s (%s)\n", filepath,
             strerror(errno));
     return GEN_ERROR_FILE_ACCESS;
   }
 
-  // count lines for allocation
   char line[256];
   size_t count = 0;
-  while (fgets(line, sizeof(line), file)) {
+  while (fgets(line, sizeof(line), file))
     count++;
-  }
 
   if (count == 0) {
     fclose(file);
@@ -102,7 +94,6 @@ generator_error_t load_common_passwords(const char *filepath) {
     return GEN_ERROR_FILE_ACCESS;
   }
 
-  // allocate memory for passwords list
   common_passwords_list = malloc(count * sizeof(char *));
   if (!common_passwords_list) {
     fclose(file);
@@ -113,16 +104,12 @@ generator_error_t load_common_passwords(const char *filepath) {
   rewind(file);
   size_t index = 0;
   while (fgets(line, sizeof(line), file) && index < count) {
-    // remove newline
     line[strcspn(line, "\r\n")] = 0;
     if (strlen(line) > 0) {
-      // allocate only if strdup succeeds
       char *dup = strdup(line);
       if (dup) {
-        common_passwords_list[index] = dup;
-        index++;
+        common_passwords_list[index++] = dup;
       } else {
-        // handle strdup failure (low memory)
         free_common_passwords();
         fprintf(stderr, "Memory allocation failed for password entry.\n");
         fclose(file);
@@ -130,32 +117,30 @@ generator_error_t load_common_passwords(const char *filepath) {
       }
     }
   }
-  common_passwords_count = index;
 
+  common_passwords_count = index;
   fclose(file);
   printf("Loaded %zu common passwords\n", common_passwords_count);
-  return GEN_SUCCESS; // Return defined success enum
+  return GEN_SUCCESS;
 }
 
+// free common passwords
 void free_common_passwords(void) {
   if (common_passwords_list) {
-    for (size_t i = 0; i < common_passwords_count; i++) {
+    for (size_t i = 0; i < common_passwords_count; i++)
       free(common_passwords_list[i]);
-    }
     free(common_passwords_list);
     common_passwords_list = NULL;
     common_passwords_count = 0;
   }
 }
 
-// initialize default options
+// initialize generator options
 void init_generator_options(generator_options_t *opts) {
   if (!opts)
     return;
-
-  // NIST-compliant defaults
-  opts->min_length = 8;  // NIST minimum
-  opts->max_length = 64; // NIST recommended max
+  opts->min_length = 8;
+  opts->max_length = 64;
   opts->include_lowercase = true;
   opts->include_uppercase = true;
   opts->include_digits = true;
@@ -166,17 +151,12 @@ void init_generator_options(generator_options_t *opts) {
 generator_error_t init_generator(const char *data_dir) {
   if (!data_dir)
     return GEN_ERROR_NULL_POINTER;
-
   char filepath[512];
   snprintf(filepath, sizeof(filepath), "%s/common_passwords.txt", data_dir);
-
-  // check for success/failure based on the return type
   if (load_common_passwords(filepath) != GEN_SUCCESS) {
     fprintf(stderr,
             "Warning: Failed to load external common passwords list.\n");
-    // continue execution relying on the minimal built-in list
   }
-
   return GEN_SUCCESS;
 }
 
@@ -186,69 +166,52 @@ void cleanup_generator(void) { free_common_passwords(); }
 generator_error_t generate_password(char *buffer, size_t buffer_size,
                                     size_t length,
                                     const generator_options_t *opts) {
-
   if (!buffer)
     return GEN_ERROR_NULL_POINTER;
   if (buffer_size < length + 1)
     return GEN_ERROR_BUFFER_TOO_SMALL;
 
-  // use default if option not provided
   generator_options_t default_opts;
   if (!opts) {
     init_generator_options(&default_opts);
     opts = &default_opts;
   }
 
-  // validate length
-  if (length < opts->min_length || length > opts->max_length) {
+  if (length < opts->min_length || length > opts->max_length)
     return GEN_ERROR_INVALID_LENGTH;
-  }
-
-  // sanity check if the user is ahuel v krai
-  if (length > 256) {
+  if (length > 256)
     return GEN_ERROR_INVALID_LENGTH;
-  }
 
-  // build character set
   char charset[256] = "";
-  if (opts->include_lowercase) {
+  if (opts->include_lowercase)
     strcat(charset, LOWERCASE);
-  }
-  if (opts->include_uppercase) {
+  if (opts->include_uppercase)
     strcat(charset, UPPERCASE);
-  }
-  if (opts->include_digits) {
+  if (opts->include_digits)
     strcat(charset, DIGITS);
-  }
-  if (opts->include_symbols) {
+  if (opts->include_symbols)
     strcat(charset, SYMBOLS);
-  }
-
-  if (charset[0] == '\0') {
+  if (charset[0] == '\0')
     return GEN_ERROR_NO_CHARSET;
-  }
 
   generator_error_t status = GEN_SUCCESS;
-  size_t max_attempts = 5; // safety cap for common password checks
+  size_t max_attempts = 5;
   size_t attempts = 0;
 
   do {
-    if (attempts >= max_attempts) {
+    if (attempts >= max_attempts)
       return GEN_ERROR_COMMON_PASSWORD;
-    }
     attempts++;
 
     unsigned char *random_bytes = malloc(length);
-    if (!random_bytes) {
+    if (!random_bytes)
       return GEN_ERROR_NULL_POINTER;
-    }
 
     size_t charset_len = strlen(charset);
     size_t max_acceptable = 256 - (256 % charset_len);
 
     for (size_t i = 0; i < length; i++) {
       unsigned char random_val;
-
       do {
         if (get_random_bytes(&random_val, 1) != 0) {
           free(random_bytes);
@@ -263,7 +226,6 @@ generator_error_t generate_password(char *buffer, size_t buffer_size,
 
     if (opts->check_common && is_common_password(buffer)) {
       status = GEN_ERROR_COMMON_PASSWORD;
-      continue;
     } else {
       status = GEN_SUCCESS;
       break;
@@ -274,48 +236,37 @@ generator_error_t generate_password(char *buffer, size_t buffer_size,
   return status;
 }
 
-// check if password is common
+// check common passwords
 bool is_common_password(const char *ps) {
   if (!ps)
     return false;
 
   char lower_ps[256];
   size_t len = strlen(ps);
-
-  if (len >= sizeof(lower_ps)) {
+  if (len >= sizeof(lower_ps))
     len = sizeof(lower_ps) - 1;
-  }
 
-  // convert to lowercase
-  for (size_t i = 0; i < len; i++) {
+  for (size_t i = 0; i < len; i++)
     lower_ps[i] = (char)tolower((unsigned char)ps[i]);
-  }
   lower_ps[len] = '\0';
 
-  // check against loaded common passwords
-  for (size_t i = 0; i < common_passwords_count; i++) {
-    if (strcmp(lower_ps, common_passwords_list[i]) == 0) {
+  for (size_t i = 0; i < common_passwords_count; i++)
+    if (strcmp(lower_ps, common_passwords_list[i]) == 0)
       return true;
-    }
-  }
 
-  // fallback minimal list
   const char *minimal_common[] = {
       "111111",     "123123",    "12345", "123456",   "12345678", "123456789",
       "1234567890", "abc123",    "admin", "football", "letmein",  "monkey",
-      "password",   "password1", "qwert", "qwerty",   "welcome",  NULL,
-  };
+      "password",   "password1", "qwert", "qwerty",   "welcome",  NULL};
 
-  for (int i = 0; minimal_common[i] != NULL; i++) {
-    if (strcmp(lower_ps, minimal_common[i]) == 0) {
+  for (int i = 0; minimal_common[i]; i++)
+    if (strcmp(lower_ps, minimal_common[i]) == 0)
       return true;
-    }
-  }
 
   return false;
 }
 
-// helper function to get error message string
+// error string helper
 const char *generator_error_string(generator_error_t error) {
   switch (error) {
   case GEN_SUCCESS:
