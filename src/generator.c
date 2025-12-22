@@ -1,6 +1,6 @@
 #define _GNU_SOURCE
 
-#include "slovo/generator.h"
+#include "clovo/generator.h"
 
 #include <ctype.h>
 #include <errno.h>

@@ -1,5 +1,5 @@
-#include "slovo/policy.h"
-#include "slovo/analyzer.h"
+#include "clovo/policy.h"
+#include "clovo/analyzer.h"
 
 #include <ctype.h>
 #include <stdio.h>

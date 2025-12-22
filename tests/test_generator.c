@@ -1,4 +1,4 @@
-#include "slovo/generator.h"
+#include "clovo/generator.h"
 
 #include <stdio.h>
 #include <string.h>

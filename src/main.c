@@ -1,9 +1,9 @@
-#include "slovo/analyzer.h"
-#include "slovo/generator.h"
-#include "slovo/ui.h"
-#include "slovo/policy.h"
-#include "slovo/comparison.h"
-#include "slovo/export.h"
+#include "clovo/analyzer.h"
+#include "clovo/generator.h"
+#include "clovo/ui.h"
+#include "clovo/policy.h"
+#include "clovo/comparison.h"
+#include "clovo/export.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -31,12 +31,12 @@ void print_usage(const char *program_name) {
   printf("\n");
   if (use_colors) {
     printf("%s╔══════════════════════════════════════════════════════════╗%s\n", cyan, reset);
-    printf("%s║%s  %sSlovo - Password Strength Analyzer & Generator%s          %s║%s\n", 
+    printf("%s║%s  %sClovo - Password Strength Analyzer & Generator%s          %s║%s\n", 
            cyan, reset, bold, reset, cyan, reset);
     printf("%s╚══════════════════════════════════════════════════════════╝%s\n", cyan, reset);
   } else {
     printf("═══════════════════════════════════════════════════════════\n");
-    printf("  Slovo - Password Strength Analyzer & Generator\n");
+    printf("  Clovo - Password Strength Analyzer & Generator\n");
     printf("═══════════════════════════════════════════════════════════\n");
   }
   

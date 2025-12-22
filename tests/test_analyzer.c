@@ -1,4 +1,4 @@
-#include "slovo/analyzer.h"
+#include "clovo/analyzer.h"
 #include "unity.h"
 #include <string.h>
 

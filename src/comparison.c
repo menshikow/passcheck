@@ -1,4 +1,4 @@
-#include "slovo/comparison.h"
+#include "clovo/comparison.h"
 
 #include <stdlib.h>
 #include <string.h>

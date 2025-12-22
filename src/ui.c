@@ -1,5 +1,5 @@
-#include "slovo/ui.h"
-#include "slovo/analyzer.h"
+#include "clovo/ui.h"
+#include "clovo/analyzer.h"
 
 #include <stdio.h>
 #include <stdlib.h>

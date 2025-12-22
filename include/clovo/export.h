@@ -1,7 +1,7 @@
 #ifndef EXPORT_H
 #define EXPORT_H
 
-#include "slovo/analyzer.h"
+#include "clovo/analyzer.h"
 #include <stdio.h>
 
 // export formats

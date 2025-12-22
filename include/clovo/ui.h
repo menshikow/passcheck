@@ -1,7 +1,7 @@
 #ifndef UI_H
 #define UI_H
 
-#include "slovo/analyzer.h"
+#include "clovo/analyzer.h"
 
 // ANSI color codes
 #define RESET "\033[0m"

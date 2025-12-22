@@ -1,5 +1,5 @@
-#include "slovo/export.h"
-#include "slovo/analyzer.h"
+#include "clovo/export.h"
+#include "clovo/analyzer.h"
 
 #include <stdio.h>
 #include <string.h>
