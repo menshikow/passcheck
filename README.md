@@ -1,6 +1,6 @@
 # Slovo
 
-A command-line tool for analyzing password strength and generating new. Slovo provides advanced password security analysis including pattern detection, repetition analysis, dictionary word checking, crack time estimation, policy validation, and batch processing.
+CLI tool for analyzing password strength and generating new. Slovo provides advanced password security analysis including pattern detection, repetition analysis, dictionary word checking, crack time estimation, policy validation, and batch processing.
 
 [![C17](https://img.shields.io/badge/C-17-blue.svg?style=flat-square)](https://en.wikipedia.org/wiki/C17_(C_standard_revision))
 [![CMake](https://img.shields.io/badge/CMake-3.15+-064F8C.svg?style=flat-square&logo=cmake)](https://cmake.org/)
