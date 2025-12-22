@@ -486,7 +486,6 @@ Contributions are welcome! Please ensure that:
 1. All tests pass (`ctest --output-on-failure`)
 2. Code follows the existing style
 3. New features include appropriate tests
-4. Documentation is updated
 
 ## License
 
