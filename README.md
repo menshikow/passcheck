@@ -1,4 +1,4 @@
-# Clovo 
+# Clovo
 
 CLI tool for analyzing password strength and generating new. Clovo provides advanced password security analysis including pattern detection, repetition analysis, dictionary word checking, crack time estimation, policy validation, and batch processing.
 
@@ -21,6 +21,7 @@ CLI tool for analyzing password strength and generating new. Clovo provides adva
 ## Features
 
 ### Password Analysis
+
 - **Character Analysis**: Detects lowercase, uppercase, digits, and symbols
 - **Entropy Calculation**: Measures password randomness and unpredictability
 - **Pattern Detection**: Identifies sequential patterns (123, abc) and keyboard patterns (qwerty, asdf)
@@ -31,6 +32,7 @@ CLI tool for analyzing password strength and generating new. Clovo provides adva
 - **Strength Scoring**: 0-100 point scoring system with pattern penalties
 
 ### Password Generation
+
 - **Secure Random Generation**: Uses system random number generators
 - **Customizable Length**: Generate passwords of any length (8-256 characters)
 - **Passphrase Generation**: Generate memorable passphrases with multiple words
@@ -38,6 +40,7 @@ CLI tool for analyzing password strength and generating new. Clovo provides adva
 - **Character Set Control**: Includes lowercase, uppercase, digits, and symbols
 
 ### Advanced Features
+
 - **Batch Processing**: Analyze multiple passwords from a file
 - **Multiple Output Formats**: Text, JSON, and CSV output formats
 - **Policy Validation**: Check passwords against NIST, PCI-DSS, and custom policies
@@ -408,6 +411,7 @@ make run_generator_tests
 ### Test Coverage
 
 The test suite includes:
+
 - Null and empty password handling
 - Character type detection
 - Length analysis
@@ -422,7 +426,7 @@ The test suite includes:
 
 ### Project Structure
 
-```
+```md
 clovo/
 ├── include/clovo/     # Header files
 │   ├── analyzer.h     # Password analysis functions
