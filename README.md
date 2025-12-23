@@ -87,4 +87,4 @@ cmake --build build-debug
 
 ## License
 
-MIT License - see [LICENSE](https://www.google.com/search?q=LICENSE) for details.
+MIT License - see LICENSE for details.
