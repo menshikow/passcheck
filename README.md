@@ -1,8 +1,8 @@
 # Clovo
 
-**CLI tool for advanced password security analysis and generation.**
+**CLI tool for password security analysis and generation.**
 
-Clovo helps you analyze password strength (entropy, patterns, crack time) and generate secure, random credentials or passphrases. It supports batch processing, multiple export formats, and compliance checks (NIST, PCI-DSS).
+Clovo helps you analyze password strength (entropy, patterns) and generate secure, random credentials or passphrases. It supports batch processing, multiple export formats, and compliance checks (NIST, PCI-DSS).
 
 ## Key Features
 
@@ -87,4 +87,4 @@ cmake --build build-debug
 
 ## License
 
-MIT License - see LICENSE for details.
+MIT License
